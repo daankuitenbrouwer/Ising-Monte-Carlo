@@ -15,7 +15,7 @@ def initialize(size,init_M):
     pre_lattice = np.random.random((size,size))
     magprelattice = np.average(pre_lattice)
     print magprelattice, '=magprelattice'
-    bin_lattice = pre_lattice - (magprelattice - 0.5) + 0.5*init_M
+    bin_lattice = pre_lattice - magprelattice + 0.5*init_M
     lattice = 2*np.round(bin_lattice)-1
     return lattice.astype(int)
 

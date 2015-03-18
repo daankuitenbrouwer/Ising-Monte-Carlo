@@ -45,7 +45,7 @@ elif switch == 2:
     print "ooo"
 elif switch == 3:
   lattice = init_l
-  while np.average(lattice) != init_M:
+  while np.average(lattice) != 0:
     lattice =functions.initialize(size,init_M)
   Thighl,Tlowl = functions.crittemp(lattice,Trange,critval,flipnum,runtime)
 else:
