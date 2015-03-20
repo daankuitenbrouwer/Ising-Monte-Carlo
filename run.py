@@ -22,15 +22,15 @@ import matplotlib.pyplot as plt
 plt.close("all")
 
 size =20 #Width of the lattice
-init_M = 0 #initial magnetization
+init_M = 0.99 #initial magnetization
 init_l = functions.initialize(size,init_M) #initialize the girl, M sets magnetization
 T = 0.5  #temperature, entropy vs potential energy
 invT = 1/T
 runtime = 5000 #Total time of the simulation
 B = 0.1 #The favorite orientation
-Trange = np.linspace(0.001,1,10)
+Trange = np.linspace(0.001,1,5)
 critval = 0.15
-flipnum = 10
+flipnum = 2
 test=-1*np.ones((9,9))
 test[::2,0]= 1
 test[::2,-1]= 1 #BOTLEFT
@@ -47,10 +47,16 @@ elif switch == 3:
   lattice = init_l
   while np.average(lattice) != init_M:
     lattice =functions.initialize(size,init_M)
-  Thighl,Tlowl = functions.crittemp(lattice,Trange,critval,flipnum,runtime)
+  Marray = functions.crittemp(lattice,Trange,critval,flipnum,runtime)
 else:
     lattice = test
     
+print Marray
+    
+plt.plot(Marray,range(len(Marray)))
+plt.show()
+    
+"""  
 plt.figure(1)
 plt.subplot(121)
 plt.imshow(lattice,cmap="Greys",interpolation="nearest")
@@ -62,7 +68,7 @@ plt.show()
 
 
 
-"""
+
 #run the simulation for runtime steps, at temp T and B-field B
 print "B: ",B
 print "T: ",T

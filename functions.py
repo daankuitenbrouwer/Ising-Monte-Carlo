@@ -9,6 +9,8 @@ from __future__ import division
 import numpy as np
 from pylab import *
 from scipy.ndimage import measurements
+import matplotlib.pyplot as plt
+import random
 
 #initializes a random lattice.
 def initialize(size,init_M):
@@ -200,7 +202,7 @@ def cluster_hist(area,bins):
     plt.plot(np.linspace(np.min(area),np.max(area),bins),cluster_hist[0])
     return cluster_hist[0],np.min(area),np.max(area)
     
-    
+   
 def clusterflipper(lattice):  
   clusterarray,highlabel = cluster_array(lattice)
   labelnum = np.random.randint(0,highlabel+1)
@@ -212,24 +214,36 @@ def clusterflipper(lattice):
   return lattice
     
 def crittemp(lattice,Trange,critval,flipnum,runtime):
-  Thighl,Tlowl = [],[]
-  temp_lattice = np.empty_like (lattice) #deep copy the old lattice
-  temp_lattice[:] = lattice 
+  Marray = np.zeros((len(Trange),flipnum))
   
   for T in Trange:
-    lattice[:] = temp_lattice
     print np.average(lattice), 'initialm'
     invT = (1./T)
     print T,'=T'
     for flp in range(flipnum):
-      lattice = simulate(lattice,invT,0,runtime)
       print np.average(lattice), '=m'
-      if abs(np.average(lattice)) < critval:
-        lattice = clusterflipper(lattice)
-      elif flp == flipnum -1:
-        Thighl.append(T)
-      else:
-        Tlowl.append(T)
-  print Thighl, '=Thighl',Tlowl,'=Tlowl'
-  return Thighl, Tlowl
+      formerlattice = np.empty_like(lattice)
+      formerlattice[:] = lattice
+      lattice = simulate(lattice,invT,0,runtime)
+      lattice = clusterflipper(lattice)
+      plt.figure(1)
+      plt.subplot(121)
+      plt.imshow(lattice,cmap="Greys",interpolation="nearest")
+      plt.colorbar()
+      plt.subplot(122)
+      plt.imshow(formerlattice,cmap="Greys",interpolation="nearest")
+      plt.colorbar()
+      plt.show()
+      print formerlattice, 'formerlattice',lattice,'lattice'
+      dE = np.sum(global_energy(formerlattice,0)) - np.sum(global_energy(lattice,0))
+      lattice,P,is_chosen = take_or_refuse(invT,formerlattice,lattice,dE)
+      Marray[flp] = np.average(lattice)
+      print Marray[T][flp],'=M',T,'=T'
+  return Marray
+  
+
+  
+  
+
+
 
