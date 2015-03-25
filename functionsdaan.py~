@@ -8,7 +8,7 @@ import random
 def initializelat(size,init_M):
   pre_lattice = np.random.random((size,size))
   magprelattice = np.average(pre_lattice)
-  print magprelattice, '=magprelattice'
+  #print magprelattice, '=magprelattice'
   bin_lattice = pre_lattice - (magprelattice - 0.5) + 0.5*init_M
   lattice = 2*np.round(bin_lattice)-1
   return lattice.astype(int)
@@ -21,13 +21,13 @@ def initializeelse(size):
 def rand_init_pos(blacklist,lattice):
   #print blacklist
   available_lst = np.where(blacklist == 0)
-  print available_lst,'=avabl',len(available_lst),len(available_lst[0])
-  rnl = np.linspace(0,len(available_lst)-1,len(available_lst))
+  #print available_lst,'=avabl',len(available_lst),len(available_lst[0])
+  rnl = np.linspace(0,len(available_lst[0])-1,len(available_lst[0]))
   picked_val = random.choice(rnl)
-  print picked_val,'=pval',np.max(rnl)
+  #print picked_val,'=pval',np.max(rnl)
   xval = available_lst[1][picked_val]
   yval = available_lst[0][picked_val]
-  print xval,yval,'=x,y from rand_init_pos'
+  #print xval,yval,'=x,y from rand_init_pos'
   return xval,yval
 
 def take_reject_neighbour(lattice,xval,yval,comp_xval,comp_yval,blacklist,beta):
@@ -36,11 +36,13 @@ def take_reject_neighbour(lattice,xval,yval,comp_xval,comp_yval,blacklist,beta):
   R = random.uniform(-1,1)
   P = 1-np.exp(np.min([0,2*beta*R*R*lattice[yval][xval]*lattice[comp_yval][comp_xval]]))
   compval = random.uniform(0,1)
+  #print P,compval,R,beta,'=P,compval,R,beta,'
   if P > compval:
     acceptflip = -1
   else:
     acceptflip = 1
   if blacklist[comp_yval][comp_xval] != 0:
+    #print 'here',blacklist[comp_yval][comp_xval],'=bl'
     acceptflip = 1
   return acceptflip
   
@@ -67,7 +69,7 @@ def periodic_boundary(lattice,xdir,ydir,xval,yval,comp_xval,comp_yval):
   return xdir,ydir,xval,yval,comp_xval,comp_yval
   
 def blackboxchecker(xdir,ydir,xval,yval,comp_xval,comp_yval,blacklist):
-  print 'BBC'
+  #print 'BBC'
   newseed = 0
   if blacklist[comp_yval][comp_xval] != 0:
     comp_xval = xval + xdir
@@ -107,14 +109,15 @@ def position(acceptflip,blacklist,xval,yval,comp_xval,comp_yval):
     
 def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta):
   acceptflip = take_reject_neighbour(lattice,xval,yval,comp_xval,comp_yval,blacklist,beta)
-  print acceptflip,'=acceptflip'
+  print acceptflip,'=acceptflip',lattice[comp_yval][comp_xval],lattice[yval][xval],'=lattice[comp_xval],lattice[xval]',comp_xval,'comp_xval'
   blacklist[comp_yval][comp_xval] = 1
   blacklist[yval][xval] = blacklist[yval][xval] + 1
   lattice[comp_yval][comp_xval] = acceptflip*lattice[comp_yval][comp_xval]
   futurelattice[comp_yval][comp_xval] = lattice[comp_yval][comp_xval]
   xval,yval,comp_xval,comp_yval,ydir,xdir,newseed = position(acceptflip,blacklist,xval,yval,comp_xval,comp_yval)
+  print len(np.where(blacklist == 0)[0]), '#not attended sites'
   if np.min(blacklist) == 0:
-    
+    '''
     #print xval,'=xval',comp_xval,'=comp_xval',yval,'=yval',comp_yval,'=comp_yval'
     cnt = cnt + 1
     plt.figure(1)
@@ -127,16 +130,18 @@ def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta
     plt.subplot(133)
     plt.imshow(blacklist,cmap="Set2",interpolation="nearest")
     #plt.colorbar()
-    #if cnt%3 == 0:
-      #plt.show()
+    if cnt%3 == 0:
+      plt.show()
     #newseed = 1
+     ''' 
     if newseed == 1:
       print np.min(blacklist),'=min blacklist'
       while newseed == 1 and blacklist[yval][xval] != 0:
-        xval,yval = rand_init_pos(blacklist,lattice)
-        #while blacklist[yval][xval] != 0:
-        #  xval,yval = rand_init_pos(blacklist,lattice)
+        xval,yval = rand_init_pos(blacklist,lattice) # New chosen flip is unconditionally accepted, need single flip method to decide upon accepting or rejecting?
+      
       blacklist[yval][xval] = 1
+      
+      
       lattice[yval][xval] = -1*lattice[yval][xval] #the module about accepting or rejecting the first randomly picked spin must be built still
       futurelattice[yval][xval] = lattice[yval][xval]
       comp_xval = xval + 1
