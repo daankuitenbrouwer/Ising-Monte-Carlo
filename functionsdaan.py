@@ -109,7 +109,7 @@ def position(acceptflip,blacklist,xval,yval,comp_xval,comp_yval):
     
 def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta):
   acceptflip = take_reject_neighbour(lattice,xval,yval,comp_xval,comp_yval,blacklist,beta)
-  #print acceptflip,'=acceptflip',lattice[comp_yval][comp_xval],lattice[yval][xval],'=lattice[comp_xval],lattice[xval]',comp_xval,'comp_xval'
+  print acceptflip,'=acceptflip',lattice[comp_yval][comp_xval],lattice[yval][xval],'=lattice[comp_xval],lattice[xval]',comp_xval,'comp_xval'
   blacklist[comp_yval][comp_xval] = 1
   blacklist[yval][xval] = blacklist[yval][xval] + 1
   lattice[comp_yval][comp_xval] = acceptflip*lattice[comp_yval][comp_xval]
@@ -133,9 +133,9 @@ def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta
     if cnt%3 == 0:
       plt.show()
     #newseed = 1
-     ''' 
+     '''  
     if newseed == 1:
-      print np.min(blacklist),'=min blacklist'
+      #print np.min(blacklist),'=min blacklist'
       while newseed == 1 and blacklist[yval][xval] != 0:
         xval,yval = rand_init_pos(blacklist,lattice) # New chosen flip is unconditionally accepted, need single flip method to decide upon accepting or rejecting?
       
