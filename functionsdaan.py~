@@ -4,6 +4,7 @@ from pylab import *
 from scipy.ndimage import measurements
 import matplotlib.pyplot as plt
 import random
+from sys import exit
 
 def initializelat(size,init_M):
   pre_lattice = np.random.random((size,size))
@@ -33,10 +34,10 @@ def rand_init_pos(blacklist,lattice):
 def take_reject_neighbour(lattice,xval,yval,comp_xval,comp_yval,blacklist,beta):
 #  if lattice[yval][xval] == lattice[comp_yval][comp_xval]:
 #   acceptflip = 1 # This means that the flip is not accepted
-  R = random.uniform(-1,1)
-  P = 1-np.exp(np.min([0,2*beta*R*R*lattice[yval][xval]*lattice[comp_yval][comp_xval]]))
+  #R = random.uniform(-1,1)
+  P = 1-np.exp(np.min([0,2*beta*lattice[yval][xval]*lattice[comp_yval][comp_xval]]))
   compval = random.uniform(0,1)
-  #print P,compval,R,beta,'=P,compval,R,beta,'
+  #print P,compval,beta,'=P,compval,beta,',lattice[yval][xval]*lattice[comp_yval][comp_xval],'sisj'
   if P > compval:
     acceptflip = -1
   else:
@@ -108,8 +109,12 @@ def position(acceptflip,blacklist,xval,yval,comp_xval,comp_yval):
   return xval,yval,comp_xval,comp_yval,ydir,xdir,newseed
     
 def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta):
+  cnt = cnt +1
+  if cnt > 993:
+    print cnt, 'for cmp check'
+    exit(0)
   acceptflip = take_reject_neighbour(lattice,xval,yval,comp_xval,comp_yval,blacklist,beta)
-  print acceptflip,'=acceptflip',lattice[comp_yval][comp_xval],lattice[yval][xval],'=lattice[comp_xval],lattice[xval]',comp_xval,'comp_xval'
+  #print acceptflip,'=acceptflip',lattice[comp_yval][comp_xval],lattice[yval][xval],'=lattice[comp_xval],lattice[xval]',comp_xval,'comp_xval'
   blacklist[comp_yval][comp_xval] = 1
   blacklist[yval][xval] = blacklist[yval][xval] + 1
   lattice[comp_yval][comp_xval] = acceptflip*lattice[comp_yval][comp_xval]
@@ -117,7 +122,7 @@ def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta
   xval,yval,comp_xval,comp_yval,ydir,xdir,newseed = position(acceptflip,blacklist,xval,yval,comp_xval,comp_yval)
   #print len(np.where(blacklist == 0)[0]), '#not attended sites'
   if np.min(blacklist) == 0:
-    
+    '''
     #print xval,'=xval',comp_xval,'=comp_xval',yval,'=yval',comp_yval,'=comp_yval'
     cnt = cnt + 1
     plt.figure(1)
@@ -133,7 +138,7 @@ def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta
     if cnt%3 == 0:
       plt.show()
     #newseed = 1
-      
+     '''  
     if newseed == 1:
       #print np.min(blacklist),'=min blacklist'
       while newseed == 1 and blacklist[yval][xval] != 0:
@@ -153,3 +158,41 @@ def wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta
       
     wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta)
   return futurelattice
+  
+def crittemp(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,Trange,size):
+  beta = 1./Trange[0]
+  cnt = 0
+  futurelattice = wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta)
+  magnetization = np.zeros(len(Trange))
+  
+  for ind,T in enumerate(Trange):
+    beta = 1./T
+  #plt.imshow(futurelattice,cmap="Greys",interpolation="nearest")
+  #print 'fut'
+  #plt.show()
+    lattice = np.empty_like(futurelattice)
+    lattice[:] = futurelattice
+  #plt.imshow(lattice,cmap="Greys",interpolation="nearest")
+  #print 'lat'
+  #plt.show()
+    blacklist,futurelattice = initializeelse(size)
+    xval,yval = rand_init_pos(blacklist,lattice) 
+    blacklist[yval][xval] = 1 # I flip the first spin unconditionally
+    lattice[yval][xval] = -1*lattice[yval][xval] #the module about accepting or rejecting the first randomly picked spin must be built still
+    futurelattice[yval][xval] = lattice[yval][xval]
+    comp_xval = xval + 1
+    comp_yval = yval
+    xdir = comp_xval - xval
+    ydir = comp_yval - yval
+    xdir,ydir,xval,yval,comp_xval,comp_yval = periodic_boundary(lattice,xdir,ydir,xval,yval,comp_xval,comp_yval)
+    cnt = 0
+  #print lattice[yval][xval],lattice[comp_xval][comp_yval],'latxy,latcompxy'
+    futurelattice = wolff(lattice,blacklist,futurelattice,xval,yval,comp_xval,comp_yval,cnt,beta)
+    magnetization[ind] = np.average(futurelattice)
+    futurelattice[:] = -1*futurelattice[:]
+  #print magnetization[ind],'magnetization[ind]'
+  #plt.imshow(futurelattice,cmap="Greys",interpolation="nearest")
+  #plt.show()
+#  print magnetization
+  
+  return magnetization
