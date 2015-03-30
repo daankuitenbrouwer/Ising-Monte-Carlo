@@ -76,10 +76,10 @@ def TryAdd(TryAdd_y,TryAdd_x,y,x,lattice,BlackList,J):
   
 def accept_refuse_new_flip(y,x,lattice,J):
   up,down,left,right = Positions_Neighbours(y,x,lattice)
-  dE = abs(2*(lattice[up][x] + lattice[down][x] + lattice[y][left] + lattice[y][right]))
-  P = np.exp(-dE*J)
+  dE = -2*-lattice[y][x]*(lattice[up][x] + lattice[down][x] + lattice[y][left] + lattice[y][right])
+  P = np.exp(-2*dE*J)
   compval = random.uniform(0,1)
-  print P,compval,dE,'P,compval,dE'
+  #print P,compval,dE,'P,compval,dE'
   acceptflip = 0
   if P > compval:
     lattice[y][x] = -1*lattice[y][x]
@@ -88,8 +88,8 @@ def accept_refuse_new_flip(y,x,lattice,J):
   
 def Cluster_Creator(lattice,BlackList,J):
   number_non_visited = len(np.where(BlackList)[0])
-  #print number_non_visited,'nnv'
-  while number_non_visited != 0:
+  BlackList_exhausted = 0
+  while number_non_visited != 0 and BlackList_exhausted == 0:
     #print number_non_visited, 'nnv' 
     y,x,BlackList_exhausted = rand_init_pos(BlackList)
     if BlackList_exhausted == 1:
@@ -114,7 +114,7 @@ def CritTemp(lattice,BlackList,Trange):
     #plt.imshow(BlackList,cmap='Greys',interpolation='nearest')
     #plt.show()
     J = 1./T
-    print J,'J'
+    #print J,'J'
     lattice = Cluster_Creator(lattice,BlackList,J)
     #print lattice,'lat'
     Magnetization_func_of_T[ind] = np.average(lattice)

@@ -1,0 +1,10 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+Tc = 2.2
+Trange = np.linspace(1,2.2,500)
+beta = 0.5
+mag = (abs(Trange - Tc))**beta
+print len(Trange)
+plt.plot(Trange,mag)
+plt.show()

@@ -4,8 +4,8 @@ import matplotlib.pyplot as plt
 
 size = 22 #Width of the lattice. 
 init_M = 1 #initial magnetization
-Trange = np.linspace(0.1,3,30)
-runs = 20
+Trange = np.linspace(1,3,300)
+runs = 100
 magarray = np.zeros((runs,len(Trange)))
 
 for run in range(runs):
