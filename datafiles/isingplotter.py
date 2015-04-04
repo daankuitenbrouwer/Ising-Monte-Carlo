@@ -71,7 +71,7 @@ fitted_mag = beta_finder(reduced_T,popt[0],popt[1])#beta_finder(theor_val_T-Tc,p
 
 plt.plot(crit_T_vals,fitted_mag,'red')#plt.plot(theor_val_T,fitted_mag,'green')#
 plt.plot(np.linspace(1,3,400),pos_magarray)
-plt.text(2,1.2,'beta%s'%(popt[0]))
+plt.text(2,1.2,'beta %s'%(popt[0]))
 #plt.text(2,1.2,'sigma%s'%(np.sqrt(np.diag(pcov))))
 plt.text(2,1.1,'Tcrit %s'%(Tc))
 plt.show()
