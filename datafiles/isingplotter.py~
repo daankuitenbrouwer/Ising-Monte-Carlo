@@ -48,7 +48,7 @@ pos_magarray = np.sqrt(magarray**2)
 T_vals = np.linspace(Tlow,Thigh,Tsteps)
 delete_lst = []
 for ind,T in enumerate(T_vals):
-  if T < (Tc - 0.35):
+  if T < (Tc - 0.8):
     delete_lst.append(ind)
   if T > (Tc - 0.05):
     delete_lst.append(ind)
@@ -69,7 +69,7 @@ print pcov
 
 delete_lst = []
 for ind,T in enumerate(T_vals):
-  if T < (Tc - 0.35):
+  if T < (Tc - 0.4):
     delete_lst.append(ind)
   if T > (Tc):
     delete_lst.append(ind)
