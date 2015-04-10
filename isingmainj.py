@@ -1,5 +1,5 @@
 import numpy as np
-import functionsdaan,isingfunctionsdaan
+import isingfunctionsj
 import matplotlib.pyplot as plt
 import sys
 
@@ -11,11 +11,12 @@ lowT = 0
 highT = 2.5
 Trange = np.linspace(lowT,highT,100)
 runs = 1
+Niter = 300
 magarray = np.zeros((runs,len(Trange)))
 
 for run in range(runs):
-  lattice,BlackList = isingfunctionsdaan.InitializeLattice(size,init_M)
-  Magnetization_func_of_T = isingfunctionsdaan.CritTemp(lattice,BlackList,Trange)
+  lattice,BlackList = isingfunctionsj.InitializeLattice(size,init_M)
+  Magnetization_func_of_T = isingfunctionsj.CritTemp(lattice,BlackList,Trange,Niter)
   magarray[run] = Magnetization_func_of_T
   print 100*(float(run)/runs),'%'
   

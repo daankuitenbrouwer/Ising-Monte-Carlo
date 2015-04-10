@@ -18,19 +18,18 @@ filee = ['magnetizationruns100Trange300.txt','magnetizationruns30Tsteps400size50
 'magnetizationruns100Trange100.txt','magnetizationruns100Trange100.txt',
 'magnetizationruns30Tsteps40size100.txt','magnetizationruns100Tsteps400size22lowT1highT3.txt']
 
+magnet_data = np.loadtxt(filee[5])
+
+print len(magnet_data[0]),len(magnet_data),'lens',type(magnet_data)
+
 # Critical temperature and exponent are defined, the theoretical plot and empirical plot are both made.
 Tc = 1.86
 beta = 0.125
-theor_val_T = np.linspace(1.5,Tc,100)
+theor_val_T = np.linspace(1.5,Tc,40)
 mag = (abs(theor_val_T - Tc))**beta
 plt.plot(theor_val_T,mag,color='black')
 plt.plot(theor_val_T,-mag,color='black')
-#plt.scatter(np.linspace(1,3,300),np.mean(np.loadtxt(filee[0]),axis=0),color='red')
-#plt.scatter(np.linspace(1.2,2.6,400),np.mean(np.loadtxt(filee[1]),axis=0),color='blue')
-#plt.scatter(np.linspace(1,3,100),np.mean(np.loadtxt(filee[2]),axis=0),color='pink')
-#plt.scatter(np.linspace(1,3,100),np.mean(np.loadtxt(filee[3]),axis=0),color='green')
-#plt.scatter(np.linspace(1,3,40),np.mean(np.loadtxt(filee[4]),axis=0),color='black')#plt.scatter(Trange,np.mean(magarray,axis=0))
-plt.scatter(np.linspace(1,3,400),np.mean(np.loadtxt(filee[5]),axis=0),color='yellow')
+plt.scatter(np.linspace(1,3,40),np.mean(abs(np.loadtxt(filee[4])),axis=0),color='yellow')
 plt.xlabel('KbT/J')
 plt.ylabel('m')
 #plt.text(1.8,1.3,'size = %s, runs = %s, Tsteps = %s'%(size,runs,len(Trange)))
@@ -41,14 +40,14 @@ plt.title('Critical Temperature')
 
 Tlow = 1
 Thigh = 3
-Tsteps = 400
-magarray = np.mean(np.loadtxt(filee[5]),axis=0)
+Tsteps = 40
+magarray = np.mean(abs(np.loadtxt(filee[4])),axis=0)
 
 pos_magarray = np.sqrt(magarray**2)
 T_vals = np.linspace(Tlow,Thigh,Tsteps)
 delete_lst = []
 for ind,T in enumerate(T_vals):
-  if T < (Tc - 0.8):
+  if T < (Tc - 0.35):
     delete_lst.append(ind)
   if T > (Tc - 0.05):
     delete_lst.append(ind)
@@ -69,7 +68,7 @@ print pcov
 
 delete_lst = []
 for ind,T in enumerate(T_vals):
-  if T < (Tc - 0.4):
+  if T < (Tc - 0.35):
     delete_lst.append(ind)
   if T > (Tc):
     delete_lst.append(ind)
@@ -82,8 +81,14 @@ reduced_plot_T = -Plot_T_vals + Tc
 fitted_mag = beta_finder(reduced_plot_T,popt[0],popt[1])#beta_finder(theor_val_T-Tc,popt[0])#
 
 plt.plot(Plot_T_vals,fitted_mag,'red')#plt.plot(theor_val_T,fitted_mag,'green')#
-plt.plot(np.linspace(1,3,400),pos_magarray)
+plt.plot(np.linspace(1,3,40),pos_magarray)
 plt.text(2,1.2,'beta %s'%(popt[0]))
 #plt.text(2,1.2,'sigma%s'%(np.sqrt(np.diag(pcov))))
 plt.text(2,1.1,'Tcrit %s'%(Tc))
 plt.show()
+
+#plt.scatter(np.linspace(1,3,300),np.mean(np.loadtxt(filee[0]),axis=0),color='red')
+#plt.scatter(np.linspace(1.2,2.6,400),np.mean(np.loadtxt(filee[1]),axis=0),color='blue')
+#plt.scatter(np.linspace(1,3,100),np.mean(np.loadtxt(filee[2]),axis=0),color='pink')
+#plt.scatter(np.linspace(1,3,100),np.mean(np.loadtxt(filee[3]),axis=0),color='green')
+#plt.scatter(np.linspace(1,3,40),np.mean(np.loadtxt(filee[4]),axis=0),color='black')#plt.scatter(Trange,np.mean(magarray,axis=0))
