@@ -1,0 +1,171 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Journal Article
+% LaTeX Template
+% Version 1.3 (9/9/13)
+%
+% This template has been downloaded from:
+% http://www.LaTeXTemplates.com
+%
+% Original author:
+% Frits Wenneker (http://www.howtotex.com)
+%
+% License:
+% CC BY-NC-SA 3.0 (http://creativecommons.org/licenses/by-nc-sa/3.0/)
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%----------------------------------------------------------------------------------------
+%	PACKAGES AND OTHER DOCUMENT CONFIGURATIONS
+%----------------------------------------------------------------------------------------
+
+\documentclass[twoside]{article}
+
+\usepackage{lipsum} % Package to generate dummy text throughout this template
+
+\usepackage[sc]{mathpazo} % Use the Palatino font
+\usepackage[T1]{fontenc} % Use 8-bit encoding that has 256 glyphs
+\linespread{1.05} % Line spacing - Palatino needs more space between lines
+\usepackage{microtype} % Slightly tweak font spacing for aesthetics
+
+\usepackage[hmarginratio=1:1,top=32mm,columnsep=20pt]{geometry} % Document margins
+\usepackage{multicol} % Used for the two-column layout of the document
+\usepackage[hang, small,labelfont=bf,up,textfont=it,up]{caption} % Custom captions under/above floats in tables or figures
+\usepackage{booktabs} % Horizontal rules in tables
+\usepackage{float} % Required for tables and figures in the multi-column environment - they need to be placed in specific locations with the [H] (e.g. \begin{table}[H])
+\usepackage{hyperref} % For hyperlinks in the PDF
+
+\usepackage{lettrine} % The lettrine is the first enlarged letter at the beginning of the text
+\usepackage{paralist} % Used for the compactitem environment which makes bullet points with less space between them
+
+\usepackage{abstract} % Allows abstract customization
+\renewcommand{\abstractnamefont}{\normalfont\bfseries} % Set the "Abstract" text to bold
+\renewcommand{\abstracttextfont}{\normalfont\small\itshape} % Set the abstract itself to small italic text
+
+\usepackage{titlesec} % Allows customization of titles
+\usepackage[utf8]{inputenc}
+\renewcommand\thesection{\Roman{section}} % Roman numerals for the sections
+\renewcommand\thesubsection{\Roman{subsection}} % Roman numerals for subsections
+\titleformat{\section}[block]{\large\scshape\centering}{\thesection.}{1em}{} % Change the look of the section titles
+\titleformat{\subsection}[block]{\large}{\thesubsection.}{1em}{} % Change the look of the section titles
+
+\usepackage{fancyhdr} % Headers and footers
+\pagestyle{fancy} % All pages have headers and footers
+\fancyhead{} % Blank out the default header
+\fancyfoot{} % Blank out the default footer
+\fancyhead[C]{Internation Computational Course on Physics $\bullet$ April 2015 C} % Custom header text
+\fancyfoot[RO,LE]{\thepage} % Custom footer text
+
+%----------------------------------------------------------------------------------------
+%	TITLE SECTION
+%----------------------------------------------------------------------------------------
+
+\title{\vspace{-15mm}\fontsize{24pt}{10pt}\selectfont\textbf{Monte Carlo study of a 2D Ising lattice}} % Article title 
+
+\author{
+\large
+\textsc{D.Kuitenbrouwer, P.Nogintevullen, W.Hekman}\thanks{Para enviar comentario y sugerencias sobre ésta investigación}\\[2mm] % Your name
+\normalsize Technical University Delft \\ % Your institution
+%\normalsize \href{mailto:angelo@comunidad.unam.mx}%{angelo@comunidad.unam.mx} % Your email address
+\vspace{-5mm}
+}
+\date{}
+
+%----------------------------------------------------------------------------------------
+
+\begin{document}
+
+\maketitle % Insert title
+
+\thispagestyle{fancy} % All pages have headers and footers
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT
+%----------------------------------------------------------------------------------------
+
+\begin{abstract}
+
+\noindent A ferromagnetic Ising lattice has been studied on a computer using a Monte Carlo simulation. The critical temperature, specific heat, magnetic susceptibility and pair correlation have been investigated. The results are analyzed and plotted. The results agree with the theoretical expectations.
+
+\end{abstract}
+
+%----------------------------------------------------------------------------------------
+%	ARTICLE CONTENTS
+%----------------------------------------------------------------------------------------
+
+\begin{multicols}{2} % Two-column layout throughout the main article text
+
+\section{Introduction}
+
+\lettrine[nindent=0em,lines=1]{W}e know that the expactation value of a thermodynamic quantity can be calculated as follows: 
+
+\def\mean#1{\left< #1 \right>}
+
+\begin{equation}  \mean{A} = \frac{\sum_{r} A_i exp^{-\beta E_r}}{\sum_{r} exp^{-\beta E_r}}
+\end{equation}
+
+\hfill
+
+This might be possible for a small system but becomes very impractical for larger systems. A 20x20 spin lattice for instace, has already 2**400 of states.
+
+Instead of sampling all states and weighing them by their Boltzman factor it makes sense to sample states based on their Boltzman factor, weighing them equally. This is what is done in the Metropolis algorithm, an \emph{importance sampling} method also known as a Monte Carlo method. 
+
+%------------------------------------------------
+
+\section{Theory}
+Mention some theory, what can we expect?
+Theory surrounding measured quantities. What is expected of the critical temperature and why? 
+
+
+What is expected of the magnetic susceptibility and why?
+An external magnetic field has to work against the preferred spin of the lattice and against temperature. Much below the critical temperature the preferred spin direction makes the lattice insusceptible to an external magnetic field. Much above the critical temperature the temperature prevents a build up of magnetization. Thus the maximum magnetic susceptibility is expected around the critical temperature.
+
+Detailed Balance. Fluctuation Dissipation Theorem.
+
+
+%------------------------------------------------
+
+\section{Method of computation}
+The different computational methods we used, their limitations/advantages: 
+
+Single flip and Wolf.
+
+%------------------------------------------------
+
+\section{Results}
+
+Nice plots.
+
+\section{Discussion and Conclusion}
+
+What we think of the results.
+
+%----------------------------------------------------------------------------------------
+%	REFERENCE LIST
+%----------------------------------------------------------------------------------------
+
+\begin{thebibliography}{99} % Bibliography - this is intentionally simple in this template
+
+\bibitem[http://fluidos.eia.edu.co/]{Figueredo:2009dg}
+
+\newblock {\em Fluidos, Carlos Toro s.}
+
+\bibitem[http://www.windows2universe.org/]{Figueredo:2009dg}
+
+\newblock {\em Becca Hatheway}
+
+\bibitem[http://meteorologia.pucp.edu.pe/]{Figueredo:2009dg}
+
+\newblock {\em Hernan Castillo, Pedro Ríos}
+
+\bibitem[http://www.ammonit.com/Manuales]{Figueredo:2009dg}
+
+\newblock {\em Ammonit Measurement GmbH}
+
+ 
+\end{thebibliography}
+
+%----------------------------------------------------------------------------------------
+
+\end{multicols}
+
+\end{document}

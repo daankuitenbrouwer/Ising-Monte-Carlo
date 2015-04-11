@@ -19,52 +19,76 @@ def Positions_Neighbours(y,x,lattice):
   right = (x + 1)%(len(lattice))
   return up,down,left,right
 
-def GrowCluster(y,x,lattice,BlackList,J,cnt):
+def GrowCluster(y,x,lattice,BlackList,J,cnt,h):
   up,down,left,right = Positions_Neighbours(y,x,lattice)
   BlackList[y][x] = False #In the beginning everything should be 'True'
   cnt = cnt + 1 # counter can be used for visualisation, see plotting scheme below
   if BlackList[up][x]:
-    lattice, BlackList,cnt = TryAdd(up,x,y,x,lattice,BlackList,J,cnt)
+    lattice, BlackList,cnt = TryAdd(up,x,y,x,lattice,BlackList,J,cnt,h)
   if BlackList[y][right]:
-    lattice, BlackList,cnt = TryAdd(y,right,y,x,lattice,BlackList,J,cnt)
+    lattice, BlackList,cnt = TryAdd(y,right,y,x,lattice,BlackList,J,cnt,h)
   if BlackList[down][x]:
-    lattice, BlackList,cnt = TryAdd(down,x,y,x,lattice,BlackList,J,cnt)
+    lattice, BlackList,cnt = TryAdd(down,x,y,x,lattice,BlackList,J,cnt,h)
   if BlackList[y][left]:
-    lattice, BlackList,cnt = TryAdd(y,left,y,x,lattice,BlackList,J,cnt)
+    lattice, BlackList,cnt = TryAdd(y,left,y,x,lattice,BlackList,J,cnt,h)
   else:
     pass
   return lattice,BlackList,cnt
   
 
-def TryAdd(TryAdd_y,TryAdd_x,y,x,lattice,BlackList,J,cnt):
+def TryAdd(TryAdd_y,TryAdd_x,y,x,lattice,BlackList,J,cnt,h):
   spin_val_difference = lattice[y][x]*lattice[TryAdd_y][TryAdd_x]
-  if spin_val_difference == 1:
-    print spin_val_difference,'svd'
-  P = 1. - np.exp(np.min([0.,2.*J*spin_val_difference]))
+  if spin_val_difference == -1:
+    P = 1. - np.exp(-2.*J*(1+h))
+  else:
+    P = 0
   compval = random.uniform(0,1)
   #print P, compval,(1./J),'P,compval,T'
   if P > compval:
     lattice[TryAdd_y][TryAdd_x] = -1*lattice[TryAdd_y][TryAdd_x]
-    GrowCluster(TryAdd_y,TryAdd_x,lattice,BlackList,J,cnt)
+    GrowCluster(TryAdd_y,TryAdd_x,lattice,BlackList,J,cnt,h)
   return lattice, BlackList,cnt
   
-def Cluster_Creator(lattice,J,Niter):
+def Cluster_Creator(lattice,J,Niter,h):
   BlackList = np.ones((len(lattice),len(lattice)),dtype=bool)
   cnt = 0
   for i in range(Niter):
     y = random.choice(BlackList[0])
     x = random.choice(BlackList[0])
     lattice[y][x] = -1*lattice[y][x]
-    lattice,BlackList,cnt = GrowCluster(y,x,lattice,BlackList,J,cnt)
+    lattice,BlackList,cnt = GrowCluster(y,x,lattice,BlackList,J,cnt,h)
   return lattice
   
-def CritTemp(lattice,BlackList,Trange,Niter):
+def global_energy(lattice,h,J):
+    l_shifted = np.roll(lattice,1,axis=1)
+    r_shifted = np.roll(lattice,-1,axis=1)
+    d_shifted = np.roll(lattice,1,axis=0)
+    u_shifted = np.roll(lattice,-1,axis=0)    
+    
+    #minus sign to make it antiferromagnetic 
+    energy = np.sum(-1*((lattice*l_shifted + lattice*r_shifted + lattice*u_shifted + lattice*d_shifted) + h*lattice))#/(len(lattice)**2)
+    
+    return energy
+  
+def CritTemp(lattice,BlackList,Trange,Niter,h):
   Magnetization_func_of_T = np.zeros(len(Trange))
+  energy_func_of_T = np.zeros(len(Trange))
   for ind,T in enumerate(Trange):
     J = 1./T
-    lattice = Cluster_Creator(lattice,J,Niter)
+    lattice = Cluster_Creator(lattice,J,Niter,h)
+    energy_func_of_T[ind] = global_energy(lattice,h,J)
     Magnetization_func_of_T[ind] = np.average(lattice)
-  return Magnetization_func_of_T
+  return Magnetization_func_of_T,energy_func_of_T
+  
+def Crit_Exp_Delta(lattice,BlackList,hrange,Niter,Tc):
+  Mag_func_of_h = np.zeros(len(hrange))
+  J = 1/Tc
+  for ind, h in enumerate(hrange):
+    lattice = Cluster_Creator(lattice,J,Niter,h)
+    Mag_func_of_h[ind] = np.average(lattice)
+  return Mag_func_of_h
+    
+    
   
 '''
     plt.figure(1)
