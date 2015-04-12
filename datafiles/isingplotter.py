@@ -7,11 +7,11 @@ runs = 20
 Tsteps = 200
 size = 100
 lowT = 1.3
-highT = 4.7
+highT = 2.7
 Tc = 2.2727
 Trange = np.linspace(lowT,highT,Tsteps)
 mag_array = np.loadtxt('magnetizationruns%sTsteps%ssize%slowT%shighT%s.txt'%(runs,Tsteps,size,lowT,highT))
-en_array = np.loadtxt('energyruns%sTsteps%ssize%slowT%shighT%s.txt'%(runs,Tsteps,size,lowT,highT))
+#en_array = np.loadtxt('energyruns%sTsteps%ssize%slowT%shighT%s.txt'%(runs,Tsteps,size,lowT,highT))
 
 
 def beta(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
@@ -68,7 +68,7 @@ def beta(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
     plt.show()
     return
 
-def magn_susceptibility(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
+def magn_susceptibility(Tc,Tsteps,size,lowT,highT,Trange,mag_array):
     #preparing data for heat capacity 
     avg_m_sq_array = (np.mean(mag_array,axis=0))**2
     m_sq_avg_array = np.mean(mag_array**2,axis=0)
@@ -98,10 +98,10 @@ def magn_susceptibility(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
     fitted_mag_chi = gamma_finder(reduced_T_chi,popt_gamma[0],popt_gamma[1])
     theor_mag_chi = gamma_finder(abs(Trange - Tc),(7./4.),1./500000)
     plt.plot(crit_Trange_chi,fitted_mag_chi,'red')
-    plt.plot(Trange,theor_mag_chi,'black')
-    plt.scatter(np.linspace(lowT,highT,Tsteps),magn_susc,color='green')
+    #plt.plot(Trange,theor_mag_chi,'black')
+    plt.scatter(Trange,magn_susc,color='green')
     #plt.plot(np.linspace(lowT,highT,Tsteps),magn_susc)
-    plt.text(1.3,0.105,r'$\gamma$ = %s'%(popt_gamma[0]))
+    plt.text(1.3,0.105,r'$\gamma$ = %s'%(round(popt_gamma[0],4)))
     plt.text(1.3,0.1,'Tcrit %s'%(Tc))
     plt.xlabel('KbT/J')
     plt.ylabel(r'$\chi$')
@@ -129,7 +129,7 @@ def heat_capacity(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
       if T > (Tc -0.00001):
         delete_lst_Ch.append(ind)
     crit_Trange_Ch = np.delete(Trange,np.array(delete_lst_Ch))
-    crit_pos_magarray_Ch = np.delete(heat_cap,np.array(delete_lst_Ch))
+    crit_pos_magarray_Ch = np.delete(heat_cap_altern,np.array(delete_lst_Ch))
 
     '''
 
@@ -150,7 +150,7 @@ def heat_capacity(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
     #theor_mag_Ch = alfa_finder(reduced_T_Ch,0.1,100000)
     #plt.plot(crit_Trange_Ch,theor_mag_Ch,'green')
     #plt.plot(crit_Trange_Ch,fitted_mag_Ch,'red')
-    plt.scatter(np.linspace(lowT,highT,Tsteps),heat_cap,color='green')
+    plt.scatter(np.linspace(lowT,highT,Tsteps),heat_cap_altern,color='green')
     #plt.plot(np.linspace(lowT,highT,Tsteps),heat_cap)
     #plt.text(2,100002,'a=%s, b=%s, B=%s'%(popt_Ch[0],popt_Ch[1],popt_Ch[2]))
     #plt.text(2,1.1,'Tcrit %s'%(Tc))
@@ -162,13 +162,27 @@ def heat_capacity(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array):
 
 def mag_var_h():
     # loading data
-    runs = 10
-    hsteps = 100
+    runs = 7
+    runs2 = 10
+    runs3 = 10
+    hsteps = 600
+    hsteps2 = 300
+    hsteps3 = 100
+    hsteps4 = 100
     size = 100
     lowh = 0
-    highh = 0.2
+    highh = 0.12
+    highh2 = 0.2
+    highh3 = 0.2
+    highh4 = 0.2
     hrange = np.linspace(lowh,highh,hsteps)
+    hrange2 = np.linspace(lowh,highh2,hsteps2)
+    hrange3 = np.linspace(lowh,highh3,hsteps3)
+    hrange4 = np.linspace(lowh,highh3,hsteps3)
     mag_h_array = np.mean(abs(np.loadtxt('magnetizationruns%shsteps%ssize%slowh%shighh%s.txt'%(runs,hsteps,size,lowh,highh))),axis=0)
+    mag_h_array2 = np.mean(abs(np.loadtxt('magnetizationruns%shsteps%ssize%slowh%shighh%s.txt'%(runs2,hsteps2,size,lowh,highh2))),axis=0)
+    mag_h_array3 = np.mean(abs(np.loadtxt('magnetizationruns%shsteps%ssize%slowh%shighh%s.txt'%(runs3,hsteps3,size,lowh,highh3))),axis=0)
+    mag_h_array4 = np.mean(abs(np.loadtxt('magnetizationruns%shsteps%ssize%slowh%shighh%sNiter1000.txt'%(runs3,hsteps3,size,lowh,highh3))),axis=0)
 
     #preparing data for delta finder
     delete_lst_delta = []
@@ -192,6 +206,9 @@ def mag_var_h():
     #plt.plot(crit_h_vals_delta,fitted_mag_delta,'red')
     plt.plot(theor_h_vals,theor_mag_delta,'blue')
     plt.scatter(hrange,mag_h_array,color='green')
+    plt.scatter(hrange2,mag_h_array2,color='grey')
+    plt.scatter(hrange3,mag_h_array3,color='black')
+    plt.scatter(hrange4,mag_h_array4,color='yellow')
     #plt.text(0,1,'delta%s'%(1./popt_delta[1]))
     plt.xlabel('h')
     plt.ylabel('m')
@@ -203,4 +220,4 @@ def mag_var_h():
 #heat_capacity(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array)
 mag_var_h()
 #beta(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array)
-#magn_susceptibility(Tc,Tsteps,size,lowT,highT,Trange,mag_array,en_array)
+#magn_susceptibility(Tc,Tsteps,size,lowT,highT,Trange,mag_array)
